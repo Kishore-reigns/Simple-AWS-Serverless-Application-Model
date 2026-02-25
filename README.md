@@ -63,7 +63,7 @@ Then via the frontend try using the available features.
 You can try creating a S3 bucket and host the frontend on your own interest
 ---
 
-Author
+Author <br>
 M.Malarvannan <br>
-SDE Intern at Trimble Inc. (2026)
+SDE Intern at Trimble Inc. (Feb 2026)
 
