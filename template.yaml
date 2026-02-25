@@ -1,0 +1,62 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+
+Globals:
+  Api:
+    Cors:
+      AllowMethods: '''OPTIONS,POST,GET,DELETE'''
+      AllowHeaders: '''Content-Type'''
+      AllowOrigin: '''*'''
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 10
+    Environment:
+      Variables:
+        TABLE_NAME: !Ref DummyTable
+
+Resources:
+  DummyTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: uniqueId
+        Type: String
+
+  CrudFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/lambdas/createLambda/
+      Handler: create.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DummyTable
+      Events:
+        CreateApi:
+          Type: Api
+          Properties:
+            Path: /items
+            Method: post
+        ListApi:
+          Type: Api
+          Properties:
+            Path: /items
+            Method: get
+
+  DeleteFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: backend/lambdas/deleteLambda/
+      Handler: delete.handler
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref DummyTable
+      Events:
+        DeleteApi:
+          Type: Api
+          Properties:
+            Path: /items
+            Method: delete
+
+Outputs:
+  WebEndpoint:
+    Value: !Sub https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/items
